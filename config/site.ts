@@ -1,28 +1,35 @@
-export type SiteConfig = typeof siteConfig;
+import { FaPhoneVolume } from 'react-icons/fa6';
+
+export type ISiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: 'Numerologyx',
   description: 'เบอร์มงคลที่ช่วยให้คุณประสบความสำเร็จ',
   navItems: [
     {
-      label: 'Home',
+      label: 'Variable Cost',
       href: '/',
+      type: 'menu',
     },
-
     {
-      label: 'วิเคราะห์เบอร์ปัจจุบัน',
+      label: 'Numerologyx',
       href: '/check',
+      type: 'dropdown',
     },
   ],
   navMenuItems: [
     {
-      label: 'Profile',
-      href: '/profile',
+      label: 'วิเคราะห์เบอร์ของคุณ',
+      href: '/',
+      key: 'Numerologyx',
+      icon: FaPhoneVolume,
     },
 
     {
-      label: 'Projects',
+      label: 'เบอร์มงคล',
       href: '/projects',
+      key: 'Numerologyx',
+      icon: FaPhoneVolume,
     },
   ],
   links: {

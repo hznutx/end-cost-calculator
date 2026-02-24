@@ -10,7 +10,7 @@ export const fontMono = FontMono({
   variable: '--font-mono',
 });
 
-export const kanit = Prompt({
+export const prompt = Prompt({
   weight: ['200', '300'],
   style: ['normal', 'italic'],
   subsets: ['thai'],

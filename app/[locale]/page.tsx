@@ -1,11 +1,9 @@
 import ValueCalculator from '@/components/feature/EndCost';
 
-const HomePage = () => {
+export default function HomePage() {
   return (
     <div>
       <ValueCalculator />
     </div>
   );
-};
-
-export default HomePage;
+}

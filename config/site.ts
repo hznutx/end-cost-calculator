@@ -3,11 +3,11 @@ import { FaPhoneVolume } from 'react-icons/fa6';
 export type ISiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: 'Numerologyx',
-  description: 'เบอร์มงคลที่ช่วยให้คุณประสบความสำเร็จ',
+  name: 'EndCost',
+  description: 'เครื่องมือคำนวณต้นทุนรวมและกระจายค่าใช้จ่ายในระยะยาว ช่วยสรุปยอดใช้จ่ายทั้งหมด คำนวณต้นทุนเฉลี่ยต่อวัน และประเมินระยะเวลาหนี้ได้อย่างรวดเร็ว ใช้งานง่าย เหมาะสำหรับวางแผนการเงินและควบคุมงบประมาณให้มีประสิทธิภาพ',
   navItems: [
     {
-      label: 'Variable Cost',
+      label: '',
       href: '/',
       type: 'menu',
     },

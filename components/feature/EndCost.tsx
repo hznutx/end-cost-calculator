@@ -2,35 +2,36 @@
 
 import { useState } from 'react';
 import { Button, Input, Card, Autocomplete, AutocompleteItem } from '@heroui/react';
-import { FaDeleteLeft } from 'react-icons/fa6';
-import { IoMdClose } from 'react-icons/io';
 
 type Item = {
   id: number;
   name: string;
   price: number;
-  dailyBudget: number;
+  dailyBudget?: number;
   debt: number;
   targetDays?: number;
 };
 
 const currencyList = ['USD', 'THB', 'EUR', 'JPY', 'GBP', 'AUD', 'CAD', 'CHF', 'CNY', 'HKD', 'SGD'];
 
+const DAYS_PER_YEAR = 365;
+const DAYS_PER_MONTH = DAYS_PER_YEAR / 12;
+
 export default function ValueCalculator() {
-  const [items, setItems] = useState<Item[]>([{ id: 1, name: 'iPhone', price: 1000, dailyBudget: 2, debt: 0 }]);
+  const [items, setItems] = useState<Item[]>([{ id: 1, name: 'รถยนต์ 🚗', price: 150000, dailyBudget: 150, debt: 0 }]);
 
   const [currency, setCurrency] = useState('THB');
 
   const addItem = () => {
-    setItems([...items, { id: Date.now(), name: '', price: 0, dailyBudget: 1, debt: 0 }]);
+    setItems([...items, { id: Date.now(), name: '', price: 0, debt: 0 }]);
   };
 
   const deleteItem = (id: number) => {
     setItems(items.filter((i) => i.id !== id));
   };
 
-  const updateItem = (id: number, field: keyof Item, value: any) => {
-    setItems(items.map((i) => (i.id === id ? { ...i, [field]: value } : i)));
+  const updateItem = (id: number, data: Partial<Item>) => {
+    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, ...data } : i)));
   };
 
   const currencySymbol =
@@ -50,44 +51,77 @@ export default function ValueCalculator() {
       </Card>
 
       {items.map((item, index) => {
-        const price = item.price;
-        const daily = item.dailyBudget;
-        const adjustedPrice = price * (1 + item.debt / 100);
+        const adjustedPrice = item.price * (1 + item.debt / 100);
 
-        const totalDays = item.targetDays && item.targetDays > 0 ? item.targetDays : daily ? adjustedPrice / daily : 0;
+        const usingTargetDays = !!item.targetDays;
+        const usingDaily = !!item.dailyBudget;
 
-        const costPerDay = item.targetDays && item.targetDays > 0 ? adjustedPrice / item.targetDays : daily;
+        const totalDays = usingTargetDays ? item.targetDays! : usingDaily && item.dailyBudget! > 0 ? adjustedPrice / item.dailyBudget! : 0;
 
-        const months = totalDays / 30;
-        const years = totalDays / 365;
+        const costPerDay = usingTargetDays && item.targetDays! > 0 ? adjustedPrice / item.targetDays! : item.dailyBudget || 0;
+
+        const months = totalDays / DAYS_PER_MONTH;
+        const years = totalDays / DAYS_PER_YEAR;
 
         return (
           <Card key={item.id} className='p-4 space-y-3'>
-            <div className='grid grid-flow-row md:grid-flow-col items-center gap-3'>
-              <Input label='Item' value={item.name} onChange={(e) => updateItem(item.id, 'name', e.target.value)} />
-              <Input type='number' label={`Price (${currencySymbol})`} value={String(item.price)} onChange={(e) => updateItem(item.id, 'price', Number(e.target.value))} />
-              <div className='inline-flex items-center gap-3'>
-                <Input type='number' label='Cost per day' value={String(item.dailyBudget)} onChange={(e) => updateItem(item.id, 'dailyBudget', Number(e.target.value))} />
+            <div className='grid grid-flow-row md:grid-flow-col w-full items-center gap-3'>
+              <Input label='Item' value={item.name} onChange={(e) => updateItem(item.id, { name: e.target.value })} />
+
+              <Input type='number' label={`Price (${currencySymbol})`} value={String(item.price)} onChange={(e) => updateItem(item.id, { price: Number(e.target.value) })} />
+
+              <div className='flex items-center gap-3 w-full'>
+                <Input
+                  type='number'
+                  label='Cost per day'
+                  className='md:min-w-32'
+                  value={String(item.dailyBudget) ?? ''}
+                  isDisabled={usingTargetDays}
+                  onChange={(e) => {
+                    const value = e.target.value ? Number(e.target.value) : undefined;
+
+                    updateItem(item.id, {
+                      dailyBudget: value,
+                      targetDays: undefined,
+                    });
+                  }}
+                />
                 or
-                <Input type='number' label='Uses day' value={item.targetDays ? String(item.targetDays) : ''} onChange={(e) => updateItem(item.id, 'targetDays', e.target.value ? Number(e.target.value) : undefined)} />
+                <Input
+                  type='number'
+                  label='Uses day'
+                  value={String(item.targetDays) ?? ''}
+                  isDisabled={usingDaily}
+                  onChange={(e) => {
+                    const value = e.target.value ? Number(e.target.value) : undefined;
+
+                    updateItem(item.id, {
+                      targetDays: value,
+                      dailyBudget: undefined,
+                    });
+                  }}
+                />
               </div>
-              <Input type='number' label='Debt %' value={String(item.debt)} onChange={(e) => updateItem(item.id, 'debt', Number(e.target.value))} />
+
+              <Input type='number' label='Debt %' value={String(item.debt)} onChange={(e) => updateItem(item.id, { debt: Number(e.target.value) })} />
             </div>
+
             <div className='flex w-full justify-between items-end'>
               <div className='pt-2 text-sm space-y-1'>
-                {item.debt ? (
+                {item.debt > 0 && (
                   <p>
                     💳 Price after debt: {adjustedPrice.toFixed(2)} {currencySymbol}
                   </p>
-                ) : null}
+                )}
 
                 <p>📅 Need to use: {totalDays.toFixed(0)} days</p>
                 <p>
                   💰 Cost per day: {costPerDay.toFixed(2)} {currencySymbol}
                 </p>
                 <p>📆 ≈ {months.toFixed(1)} months</p>
-                <p>🗓 ≈ {years.toFixed(2)} years</p>
+                <p>🗓 ≈ {years.toFixed(1)} years</p>
               </div>
+
               {index > 0 && (
                 <Button color='danger' size='sm' onPress={() => deleteItem(item.id)}>
                   Delete

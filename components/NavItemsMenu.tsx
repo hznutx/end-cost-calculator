@@ -1,6 +1,6 @@
 'use client';
 
-import { kanit } from '@/config/fonts';
+import { prompt } from '@/config/fonts';
 import { siteConfig } from '@/config/site';
 import { Button } from '@heroui/button';
 import { NavbarItem } from '@heroui/navbar';
@@ -32,7 +32,7 @@ const NavItemsMenu = () => {
                     itemClasses={{
                       base: 'gap-4',
                     }}>
-                    <DropdownItem className={clsx(kanit.className)} href={href} key='autoscaling' startContent={<Icon />}>
+                    <DropdownItem className={clsx(prompt.className)} href={href} key='autoscaling' startContent={<Icon />}>
                       {label}
                     </DropdownItem>
                   </DropdownMenu>
